@@ -244,7 +244,15 @@ func runSetCombo(pedal int, args []string) int {
 
 func runSetMouse(pedal int, args []string) int {
 	flags, rest, _ := extractFlags(args)
-	var btn, dx, dy, wheel int
+	var btn byte
+	var dx, dy, wheel int8
+	parseI8 := func(name, s string) (int8, error) {
+		n, err := strconv.ParseInt(s, 10, 8)
+		if err != nil {
+			return 0, fmt.Errorf("%s: invalid signed 8-bit integer %q (range -128..127)", name, s)
+		}
+		return int8(n), nil
+	}
 	for i := 0; i < len(rest); i++ {
 		a := rest[i]
 		var k, v string
@@ -257,39 +265,41 @@ func runSetMouse(pedal int, args []string) int {
 			fmt.Fprintf(os.Stderr, "mouse flag %q missing value\n", a)
 			return 2
 		}
-		n, err := strconv.Atoi(v)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "mouse flag %s: invalid integer %q\n", k, v)
-			return 2
-		}
 		switch k {
 		case "--btn":
-			btn = n
+			n, err := strconv.ParseUint(v, 10, 8)
+			if err != nil || n > 7 {
+				fmt.Fprintf(os.Stderr, "--btn must be 0..7 (bitmask: 1=L 2=R 4=M); got %q\n", v)
+				return 2
+			}
+			btn = byte(n)
 		case "--dx":
+			n, err := parseI8("--dx", v)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				return 2
+			}
 			dx = n
 		case "--dy":
+			n, err := parseI8("--dy", v)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				return 2
+			}
 			dy = n
 		case "--wheel":
+			n, err := parseI8("--wheel", v)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				return 2
+			}
 			wheel = n
 		default:
 			fmt.Fprintf(os.Stderr, "unknown mouse flag %q\n", k)
 			return 2
 		}
 	}
-	if btn < 0 || btn > 7 {
-		fmt.Fprintln(os.Stderr, "--btn must be 0..7 (bitmask: 1=L 2=R 4=M)")
-		return 2
-	}
-	for _, p := range []struct {
-		name string
-		val  int
-	}{{"--dx", dx}, {"--dy", dy}, {"--wheel", wheel}} {
-		if p.val < -128 || p.val > 127 {
-			fmt.Fprintf(os.Stderr, "%s out of range -128..127\n", p.name)
-			return 2
-		}
-	}
-	pkts := buildMouse(byte(pedal), byte(btn), int8(dx), int8(dy), int8(wheel))
+	pkts := buildMouse(byte(pedal), btn, dx, dy, wheel)
 	return runWritePlan(fmt.Sprintf("pedal %d → mouse btn=0x%02x dx=%d dy=%d wheel=%d", pedal, btn, dx, dy, wheel), pkts, flags)
 }
 
