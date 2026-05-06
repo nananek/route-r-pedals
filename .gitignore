@@ -1,0 +1,19 @@
+# Reverse-engineering work products — kept locally for reference only.
+# These are derivative of the upstream vendor's distributable and must NOT
+# be republished.
+/FootSwitch_V*.zip
+/footswitch.msi
+/manual.pdf
+/decompiled/
+/cab-extracted/
+/msi-extracted/
+/dotnet-bin/
+
+# Build output
+/route-r-pedals
+/route-r-pedals-*
+
+# Editor / OS noise
+*.swp
+*.swo
+.DS_Store

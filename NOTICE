@@ -1,0 +1,18 @@
+route-r-pedals
+Copyright 2026 The route-r-pedals Authors.
+
+This product includes software developed by the route-r-pedals project
+(https://github.com/nananek/route-r-pedals).
+
+This is an unofficial third-party project. It is NOT affiliated with,
+endorsed by, sponsored by, or in any way connected to Route-R Co., Ltd.
+or any of its affiliates. "Route-R" and the names of any Route-R products
+referenced in this software are trademarks of their respective owners
+and are used here solely for the purpose of identifying the hardware
+this software interoperates with.
+
+The wire protocol implemented by this software was determined by
+interoperability analysis of the publicly distributed Windows
+configuration utility for the targeted devices. No source code,
+binaries, or documentation from the original utility are included
+or redistributed by this project.
